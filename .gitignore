@@ -1,0 +1,9 @@
+# Node dependencies
+node_modules/
+
+# API keys and sensitive data
+.env
+google-vision-key.json
+
+# Uploads
+uploads/
