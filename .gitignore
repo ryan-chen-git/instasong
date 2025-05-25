@@ -79,6 +79,9 @@ web_modules/
 .env.production.local
 .env.local
 
+# Google Cloud credentials
+google-cloud-vision-key.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
