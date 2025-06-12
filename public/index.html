@@ -8,6 +8,14 @@
   </head>
   <body>
     <h1>Welcome to Instasong!</h1>
+
+    <p>
+      This tool gives you a song recommendation for your potential instagram
+      story or post.
+    </p>
+
+    <p>Upload an Image!</p>
+
     <form
       id="uploadForm"
       action="/upload"
@@ -17,5 +25,21 @@
       <input type="file" name="image" required />
       <button type="submit">Upload</button>
     </form>
+
+    <div id="status"></div>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault;
+          const form = e.target;
+          const formData = new FormData(form);
+          const res = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+        });
+    </script>
   </body>
 </html>

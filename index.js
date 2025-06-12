@@ -14,6 +14,10 @@ app.post("/upload", upload.single("image"), (req, res) => {
   res.send("Image uploaded!");
 });
 
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
 async function analyzeImage(image) {
   try {
     const client = new vision.ImageAnnotatorClient({
