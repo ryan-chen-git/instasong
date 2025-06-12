@@ -1,9 +1,8 @@
 # Node dependencies
 node_modules/
 
-# API keys and sensitive data
-.env
-google-vision-key.json
+# Google Cloud credentials
+google-cloud-vision-key.json
 
 # Uploads
 uploads/
@@ -49,7 +48,6 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -88,9 +86,6 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
-
-# Google Cloud credentials
-google-cloud-vision-key.json
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
