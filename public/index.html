@@ -16,37 +16,68 @@
 
     <p>Upload an Image!</p>
 
-    <form
-      id="uploadForm"
-      action="/upload"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-      <input type="file" name="image" required />
-      <button type="submit">Upload</button>
-    </form>
+    <input type="file" id="image" accept="image/*" required />
+
+    <label for="region">Choose your region:</label>
+    <select id="region" name="market" required>
+      <option value="US">United States</option>
+      <option value="GB">United Kingdom</option>
+      <option value="CA">Canada</option>
+      <option value="DE">Germany</option>
+      <option value="BR">Brazil</option>
+      <option value="IN">India</option>
+      <option value="JP">Japan</option>
+      <option value="MX">Mexico</option>
+      <option value="FR">France</option>
+      <option value="AU">Australia</option>
+      <option value="KR">South Korea</option>
+      <option value="ES">Spain</option>
+      <option value="IT">Italy</option>
+      <option value="PH">Philippines</option>
+      <option value="NG">Nigeria</option>
+    </select>
+
+    <button id="submitButton" type="button">Find Songs</button>
 
     <div id="status"></div>
 
     <script>
       document
-        .getElementById("uploadForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
-          const form = e.target;
-          const formData = new FormData(form);
+        .getElementById("submitButton")
+        .addEventListener("click", async function () {
+          const imageInput = document.getElementById("image");
+          const region = document.getElementById("region").value;
+          const status = document.getElementById("status");
+
+          status.innerText = "";
+
+          const image = imageInput.files[0];
+          if (!image) {
+            alert("Please upload an image first.");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("image", image);
+          formData.append("market", region);
+
           try {
             const res = await fetch("/upload", {
               method: "POST",
               body: formData,
             });
+
             const data = await res.json();
-            document.getElementById("status").innerText = data.keywords
-              ? data.keywords.join(", ")
-              : data.error;
+
+            if (data.error) {
+              status.innerText = data.error;
+            } else {
+              status.innerText = `Keywords: ${data.keywords.join(
+                ", "
+              )}\nSong: ${data.song.title} by ${data.song.artist}`;
+            }
           } catch (err) {
-            document.getElementById("status").innerText =
-              "Something went wrong.";
+            status.innerText = "Something went wrong.";
             console.error("Fetch error:", err);
           }
         });

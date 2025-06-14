@@ -4,8 +4,8 @@ node_modules/
 # Google Cloud credentials
 google-cloud-vision-key.json
 
-# Uploads
-uploads/
+# Meta Approved Songs
+meta_sound_collection.json
 
 # Logs
 logs
