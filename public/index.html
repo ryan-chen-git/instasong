@@ -32,13 +32,23 @@
       document
         .getElementById("uploadForm")
         .addEventListener("submit", async function (e) {
-          e.preventDefault;
+          e.preventDefault();
           const form = e.target;
           const formData = new FormData(form);
-          const res = await fetch("/upload", {
-            method: "POST",
-            body: formData,
-          });
+          try {
+            const res = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await res.json();
+            document.getElementById("status").innerText = data.keywords
+              ? data.keywords.join(", ")
+              : data.error;
+          } catch (err) {
+            document.getElementById("status").innerText =
+              "Something went wrong.";
+            console.error("Fetch error:", err);
+          }
         });
     </script>
   </body>
