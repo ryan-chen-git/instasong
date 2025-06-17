@@ -6,6 +6,8 @@ google-cloud-vision-key.json
 
 # Meta Approved Songs
 meta_sound_collection.json
+fetchPlaylistAndCache.js
+cached_playlist.json
 
 # Logs
 logs

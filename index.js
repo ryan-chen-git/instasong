@@ -8,7 +8,7 @@ const vision = require("@google-cloud/vision");
 const client = new vision.ImageAnnotatorClient({
   keyFilename: "google-cloud-vision-key.json",
 });
-const { getSpotifyAccessToken, searchSpotifyTrack } = require("./spotify");
+const { getSpotifyAccessToken, searchSpotifyTracks } = require("./spotify");
 const { getTopMetaApprovedTracks } = require("./metaChecker");
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -28,7 +28,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const labels = result.labelAnnotations.map((label) => label.description);
     const searchQuery = labels.join(" ");
     const token = await getSpotifyAccessToken();
-    const spotifyResults = await searchSpotifyTrack(searchQuery, token, market);
+    const spotifyResults = await searchSpotifyTracks(searchQuery, token, market);
 
     // find up to 10 Meta-approved songs
     const approvedTracks = getTopMetaApprovedTracks(spotifyResults, 10);

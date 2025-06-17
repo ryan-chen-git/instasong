@@ -12,9 +12,7 @@ async function getSpotifyAccessToken() {
   try {
     const response = await axios.post(
       tokenUrl,
-      new URLSearchParams({
-        grant_type: "client_credentials",
-      }),
+      new URLSearchParams({ grant_type: "client_credentials" }),
       {
         headers: {
           Authorization: `Basic ${authString}`,
@@ -24,9 +22,9 @@ async function getSpotifyAccessToken() {
     );
 
     const accessToken = response.data.access_token;
-    console.log("Spotify access token:", accessToken);
+    console.log("Spotify access token acquired.");
     return accessToken;
-  } catch {
+  } catch (error) {
     console.error(
       "Error fetching Spotify token:",
       error.response?.data || error.message
@@ -35,33 +33,50 @@ async function getSpotifyAccessToken() {
   }
 }
 
-async function searchSpotifyTrack(keywords, accessToken, market = "US") {
-  const query = encodeURIComponent(keywords);
-  const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=50&market=${market}`;
+async function searchSpotifyTracks(
+  keywords,
+  accessToken,
+  market = "US",
+  maxTracks = 500
+) {
+  const allTracks = [];
+  const pageSize = 50;
+  const maxPages = Math.ceil(maxTracks / pageSize);
 
-  try {
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  for (let i = 0; i < maxPages; i++) {
+    const offset = i * pageSize;
+    const query = encodeURIComponent(keywords);
+    const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=${pageSize}&offset=${offset}&market=${market}`;
 
-    const tracks = response.data.tracks.items;
+    console.log(`Fetching Spotify page ${i + 1}, offset ${offset}`);
 
-    // Log all matches for debugging
-    tracks.forEach((track, i) => {
-      const artists = track.artists.map((a) => a.name).join(", ");
-      console.log(`${i + 1}. ${track.name} by ${artists}`);
-    });
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    return tracks; // ✅ return array
-  } catch (error) {
-    console.error(
-      "Error searching Spotify:",
-      error.response?.data || error.message
-    );
-    return []; // Return empty array on failure
+      const tracks = response.data.tracks.items;
+      console.log(`Page ${i + 1} returned ${tracks.length} tracks.`);
+
+      allTracks.push(...tracks);
+
+      if (tracks.length < pageSize) {
+        console.log("No more results available from Spotify.");
+        break;
+      }
+    } catch (error) {
+      console.error(
+        "Error fetching Spotify results:",
+        error.response?.data || error.message
+      );
+      break;
+    }
   }
-};
 
-module.exports = { getSpotifyAccessToken, searchSpotifyTrack };
+  console.log(`Total tracks retrieved from Spotify: ${allTracks.length}`);
+  return allTracks;
+}
+
+module.exports = { getSpotifyAccessToken, searchSpotifyTracks };
