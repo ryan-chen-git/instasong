@@ -14,7 +14,110 @@
       story or post.
     </p>
 
-    <p>Upload an Image!</p>
+    <h2>Get a Song from Your Photo</h2>
+
+    <div>
+      <label
+        ><input type="radio" name="mode" value="gpt4" checked /> GPT-4o
+        (Vision)</label
+      >
+      <label
+        ><input type="radio" name="mode" value="gpt35" /> GPT-3.5 + Vision
+        API</label
+      >
+    </div>
+
+    <form id="uploadForm">
+      <label for="genre">Genre (optional):</label>
+      <select id="genre" name="genre">
+        <option value="">-- None --</option>
+        <option value="pop">Pop</option>
+        <option value="hip hop">Hip Hop</option>
+        <option value="rock">Rock</option>
+        <option value="r&b">R&B</option>
+        <option value="indie">Indie</option>
+        <option value="electronic">Electronic</option>
+        <option value="classical">Classical</option>
+        <option value="jazz">Jazz</option>
+        <option value="latin">Latin</option>
+        <option value="country">Country</option>
+      </select>
+
+      <br />
+
+      <label for="mood">Mood (optional):</label>
+      <select id="mood" name="mood">
+        <option value="">-- None --</option>
+        <option value="happy">Happy</option>
+        <option value="sad">Sad</option>
+        <option value="romantic">Romantic</option>
+        <option value="chill">Chill</option>
+        <option value="energetic">Energetic</option>
+        <option value="melancholy">Melancholy</option>
+        <option value="uplifting">Uplifting</option>
+        <option value="nostalgic">Nostalgic</option>
+        <option value="dreamy">Dreamy</option>
+        <option value="moody">Moody</option>
+      </select>
+
+      <input type="file" name="image" id="image" accept="image/*" required />
+      <button type="submit">Get Recommendation</button>
+    </form>
+
+    <p id="loading" style="display: none">Loading...</p>
+    <p id="response"></p>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData();
+          const imageFile = document.getElementById("image").files[0];
+          formData.append("image", imageFile);
+
+          const mode = document.querySelector(
+            'input[name="mode"]:checked'
+          ).value;
+          formData.append("mode", mode);
+
+          const genre = document.getElementById("genre").value;
+          const mood = document.getElementById("mood").value;
+          formData.append("genre", genre);
+          formData.append("mood", mood);
+          const loading = document.getElementById("loading");
+          const response = document.getElementById("response");
+          loading.style.display = "block"; // Show loading
+          response.innerText = ""; // Clear old results
+
+          try {
+            const res = await fetch("/recommend", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await res.json();
+            loading.style.display = "none";
+            if (data.song) {
+              const lines = data.song
+                .split("\n")
+                .filter((line) => line.trim() !== "");
+              const formatted = lines.join("<br>");
+              document.getElementById("response").innerHTML = formatted;
+            } else {
+              document.getElementById("response").innerText =
+                "No recommendation received.";
+            }
+          } catch (err) {
+            console.error("Upload failed", err);
+            document.getElementById("response").innerText =
+              "Something went wrong.";
+          }
+        });
+    </script>
+
+    <!-- <p>Upload an Image!</p>
 
     <input type="file" id="image" accept="image/*" required />
 
@@ -166,6 +269,6 @@
             console.error("Fetch error:", err);
           }
         });
-    </script>
+    </script> -->
   </body>
 </html>
